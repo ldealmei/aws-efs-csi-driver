@@ -72,6 +72,10 @@ spec:
             timeoutSeconds: 3
             periodSeconds: 2
             failureThreshold: 5
+          {{- with .Values.podResources.efsPlugin }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
         - name: cs-driver-registrar
           image: {{ printf "%s:%s" .Values.sidecars.nodeDriverRegistrarImage.repository .Values.sidecars.nodeDriverRegistrarImage.tag }}
           args:
@@ -92,6 +96,10 @@ spec:
               mountPath: /csi
             - name: registration-dir
               mountPath: /registration
+          {{- with .Values.podResources.csDriverRegistrar }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end}}
         - name: liveness-probe
           image: {{ printf "%s:%s" .Values.sidecars.livenessProbeImage.repository .Values.sidecars.livenessProbeImage.tag }}
           args:
@@ -100,6 +108,10 @@ spec:
           volumeMounts:
             - name: plugin-dir
               mountPath: /csi
+          {{- with .Values.podResources.livenessProbe }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end}}
       volumes:
         - name: kubelet-dir
           hostPath:
